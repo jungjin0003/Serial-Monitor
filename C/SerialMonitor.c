@@ -1,42 +1,42 @@
 #include "SerialMonitor.h"
 
-HANDLE GetSerialPortHandleByPortNumber(DWORD PortNumber, DWORD BaudRate)
+HANDLE GetCommHandleByComNumber(DWORD ComNumber)
 {
-    WCHAR DeviceName[16];
+    WCHAR CommName[16];
 
-    swprintf(DeviceName, 16, L"\\\\.\\COM%d", PortNumber);
+    swprintf(CommName, 16, L"\\\\.\\COM%d", ComNumber);
 
-    HANDLE SerialPort = CreateFileW(DeviceName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hComm = CreateFileW(CommName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (SerialPort == INVALID_HANDLE_VALUE)
+    if (hComm == INVALID_HANDLE_VALUE)
     {
         printf("CreateFileW Failed\n");
         printf("GetLastError : %d\n", GetLastError());
-        return NULL;
+        return INVALID_HANDLE_VALUE;
     }
 
     DCB state;
 
-    if (GetCommState(SerialPort, &state) == FALSE)
+    if (GetCommState(hComm, &state) == FALSE)
     {
         printf("GetCommState Failed\n");
         printf("GetLastError : %d\n", GetLastError());
-        CloseHandle(SerialPort);
-        return NULL;
+        CloseHandle(hComm);
+        return INVALID_HANDLE_VALUE;
     }
 
     state.DCBlength = sizeof(DCB);
-    state.BaudRate = BaudRate;
+    state.BaudRate = CBR_115200;
     state.ByteSize = 8;
     state.Parity = NOPARITY;
     state.StopBits = ONESTOPBIT;
 
-    if (SetCommState(SerialPort, &state) == FALSE)
+    if (SetCommState(hComm, &state) == FALSE)
     {
         printf("SetCommState Failed\n");
         printf("GetLastError : %d\n", GetLastError());
-        CloseHandle(SerialPort);
-        return NULL;
+        CloseHandle(hComm);
+        return INVALID_HANDLE_VALUE;
     }
 
     COMMTIMEOUTS timeout = { 0 };
@@ -46,15 +46,15 @@ HANDLE GetSerialPortHandleByPortNumber(DWORD PortNumber, DWORD BaudRate)
     timeout.WriteTotalTimeoutConstant = 50;
     timeout.WriteTotalTimeoutMultiplier = 10;
 
-    if (SetCommTimeouts(SerialPort, &timeout) == FALSE)
+    if (SetCommTimeouts(hComm, &timeout) == FALSE)
     {
         printf("SetCommTimeouts Failed\n");
         printf("GetLastError : %d\n", GetLastError());
-        CloseHandle(SerialPort);
-        return NULL;
+        CloseHandle(hComm);
+        return INVALID_HANDLE_VALUE;
     }
 
-    return SerialPort;
+    return hComm;
 }
 
 BOOL SetBaudRate(HANDLE SerialPort, DWORD BaudRate)
