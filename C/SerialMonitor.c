@@ -57,39 +57,21 @@ HANDLE GetCommHandleByComNumber(DWORD ComNumber)
     return hComm;
 }
 
-BOOL SetBaudRate(HANDLE SerialPort, DWORD BaudRate)
+BOOL SetBaudRate(HANDLE hComm, DWORD BaudRate)
 {
     DCB state;
 
-    if (GetCommState(SerialPort, &state) == FALSE)
+    if (GetCommState(hComm, &state) == FALSE)
     {
         return FALSE;
     }
 
     state.BaudRate = BaudRate;
 
-    if (SetCommState(SerialPort, &state) == FALSE)
+    if (SetCommState(hComm, &state) == FALSE)
     {
         return FALSE;
     }
 
     return TRUE;
-}
-
-BOOL SendData(HANDLE SerialPort, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
-{
-    DWORD NumberOfBytesWritten = 0;
-    BOOL bSuccess = WriteFile(SerialPort, lpBuffer, nNumberOfBytesToWrite, &NumberOfBytesWritten, NULL);
-
-    if (bSuccess == FALSE || NumberOfBytesWritten != nNumberOfBytesToWrite)
-        return FALSE;
-
-    return TRUE;
-}
-
-BOOL RecvData(HANDLE SerialPort, LPVOID lpBuffer, DWORD BufferSize)
-{
-    BOOL bSuccess = ReadFile(SerialPort, lpBuffer, BufferSize, NULL, NULL);
-
-    return bSuccess;
 }
