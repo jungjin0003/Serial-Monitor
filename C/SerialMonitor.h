@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-HANDLE GetSerialPortHandleByPortNumber(DWORD PortNumber, DWORD BaudRate);
-BOOL SetBaudRate(HANDLE SerialPort, DWORD BaudRate);
-BOOL SendData(HANDLE SerialPort, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite);
-BOOL RecvData(HANDLE SerialPort, LPVOID lpBuffer, DWORD BufferSize);
+HANDLE GetCommHandleByComNumber(DWORD ComNumber);
+BOOL SetBaudRate(HANDLE hComm, DWORD BaudRate);
+DWORD SerialWrite(HANDLE hComm, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite);
+DWORD SerialRead(HANDLE hComm, LPVOID lpBuffer, DWORD nNumberOfBytesToRead);
