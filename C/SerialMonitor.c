@@ -75,3 +75,27 @@ BOOL SetBaudRate(HANDLE hComm, DWORD BaudRate)
 
     return TRUE;
 }
+
+DWORD SerialWrite(HANDLE hComm, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite)
+{
+    DWORD NumberOfBytesWritten;
+
+    if (WriteFile(hComm, lpBuffer, nNumberOfBytesToWrite, &NumberOfBytesWritten, NULL) == FALSE)
+    {
+        return 0;
+    }
+    
+    return NumberOfBytesWritten;
+}
+
+DWORD SerialRead(HANDLE hComm, LPVOID lpBuffer, DWORD nNumberOfBytesToRead)
+{
+    DWORD NumberOfBytesRead;
+
+    if (ReadFile(hComm, lpBuffer, nNumberOfBytesToRead, &NumberOfBytesRead, NULL) == FALSE)
+    {
+        return 0;
+    }
+
+    return NumberOfBytesRead;
+}
