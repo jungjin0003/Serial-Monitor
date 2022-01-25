@@ -1,5 +1,30 @@
 #include "SerialMonitor.h"
 
+VOID Sender(HANDLE hComm)
+{
+
+}
+
+VOID Receiver(HANDLE hComm)
+{
+    while (TRUE)
+    {
+        CHAR Buffer[128] = { 0, };
+        if (SerialRead(hComm, Buffer, 128) > 0)
+        {
+            EnterCriticalSection(&ConsoleLock);
+            printf("%s", Buffer);
+            LeaveCriticalSection(&ConsoleLock);
+        }
+    }
+}
+
+VOID SerialMonitor(DWORD ComNumber)
+{
+    HANDLE hComm = GetCommHandleByComNumber(ComNumber);
+    InitializeCriticalSection(&ConsoleLock);
+}
+
 HANDLE GetCommHandleByComNumber(DWORD ComNumber)
 {
     WCHAR CommName[16];
